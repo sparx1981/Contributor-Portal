@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "contributor_profile": {
+      "title": "Contributor Profile",
+      "description": "Represents the individual background and identity of a portal user.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "TID unique identifier" },
+        "displayName": { "type": "string", "description": "Public name" },
+        "bio": { "type": "string", "description": "Short biography" },
+        "avatarUrl": { "type": "string", "description": "Profile picture URL" },
+        "primaryProduct": { "type": "string", "enum": ["SketchUp", "Tekla", "Connect"] },
+        "isVendor": { "type": "boolean", "description": "Whether the user has completed vendor onboarding" },
+        "defaultAccountId": { "type": "string", "description": "The ID of the account context to load by default" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName", "createdAt", "updatedAt"]
+    },
+    "organisation": {
+      "title": "Organisation",
+      "description": "Represents a business entity on the contributor portal.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "legalName": { "type": "string" },
+        "address": { "type": "string" },
+        "businessReg": { "type": "string" },
+        "logoUrl": { "type": "string" },
+        "adminUid": { "type": "string", "description": "The TID of the primary admin" },
+        "isVendor": { "type": "boolean" },
+        "members": {
+          "type": "object",
+          "description": "Map of UID to role (Admin, Member, Analyst)"
+        },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "adminUid", "members", "createdAt"]
+    },
+    "content_listing": {
+      "title": "Content Listing",
+      "description": "An extension or 3D model listing on the marketplace.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string", "description": "Individual UID or Org ID" },
+        "ownerType": { "type": "string", "enum": ["individual", "organisation"] },
+        "type": { "type": "string", "enum": ["extension", "model"] },
+        "title": { "type": "string" },
+        "summary": { "type": "string" },
+        "description": { "type": "string" },
+        "version": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "in_review", "approved", "published", "denied"] },
+        "pricingModel": { "type": "string", "enum": ["free", "trial", "perpetual", "fixed_term"] },
+        "price": { "type": "number" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "mediaGallery": { "type": "array", "items": { "type": "string" } },
+        "sketchUpCompatibility": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "vendor_application": {
+      "title": "Vendor Application",
+      "description": "Tracking the 5-step vendor onboarding process.",
+      "type": "object",
+      "properties": {
+        "accountId": { "type": "string" },
+        "status": { "type": "string", "enum": ["in_progress", "submitted", "approved", "rejected"] },
+        "steps": {
+          "type": "object",
+          "properties": {
+            "form": { "type": "boolean" },
+            "tax": { "type": "boolean" },
+            "banking": { "type": "boolean" },
+            "verification": { "type": "boolean" },
+            "call": { "type": "boolean" }
+          }
+        },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "profiles/{uid}": {
+      "schema": "contributor_profile",
+      "description": "User profile data keyed by TID."
+    },
+    "organisations/{orgId}": {
+      "schema": "organisation",
+      "description": "Organisation accounts and metadata."
+    },
+    "listings/{listingId}": {
+      "schema": "content_listing",
+      "description": "Marketplace listings."
+    },
+    "vendor_applications/{applicationId}": {
+      "schema": "vendor_application",
+      "description": "Onboarding applications."
+    }
+  }
+}
